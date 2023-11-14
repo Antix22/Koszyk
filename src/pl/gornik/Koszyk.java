@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class Koszyk {
     public static void main(String[] args) {
-        List<Product> products = new ArrayList<>();
+        List<Product> shop = new ArrayList<>();
         Book book1 = new Book("Pan Tadeusz", 100, 75, "Adam Mickiewicz");
         Book book2 = new Book("Zemsta", 40, 25, "Aleksander Fredro");
         Book book3 = new Book("Wesele", 20, 40, "Stanisław Wyspiański");
@@ -24,46 +24,100 @@ public class Koszyk {
         Toy toy2 = new Toy("Samolot", 250, 2300, 15);
         Toy toy3 = new Toy("samochodzik", 500, 109, 3);
         Toy toy4 = new Toy("kucyk", 50, 115, 4);
-        products.add(book1);
-        products.add(book2);
-        products.add(book3);
-        products.add(book4);
-        products.add(disc1);
-        products.add(disc2);
-        products.add(disc3);
-        products.add(disc4);
-        products.add(toy1);
-        products.add(toy2);
-        products.add(toy3);
-        products.add(toy4);
+        shop.add(book1);
+        shop.add(book2);
+        shop.add(book3);
+        shop.add(book4);
+        shop.add(disc1);
+        shop.add(disc2);
+        shop.add(disc3);
+        shop.add(disc4);
+        shop.add(toy1);
+        shop.add(toy2);
+        shop.add(toy3);
+        shop.add(toy4);
 
+        double grossPrice = 0;
 
-        for(Product product: products){
+        for (Product product : shop) {
             product.displayProduct();
+            grossPrice += product.countPrice();
         }
 
+        System.out.println("wartość sklepu to " + grossPrice);
 
-        List<Product>buscet = new ArrayList<>();
+        List<Product> basket = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("podaj tytuł");
-        String nazwa = scanner.nextLine();
-        System.out.println("podaj ilość");
+        boolean isFind = false;
+        String nazwa;
+        int ilosc;
+        String choice;
+        do{
+            System.out.println("podaj tytuł");
+            nazwa = scanner.nextLine();
 
-        int ilosc = scanner.nextInt();
-        for(int i = 0; i< products.size(); i++){
-            Product temp = new Product(products.get(i));
-            if(products.contains(nazwa)){
-                buscet.add(products.get(i));
-                products.get(i).setQuantity(products.get(i).getQuantity() - ilosc);
+            System.out.println("podaj ilość");
+            ilosc = scanner.nextInt();
+            scanner.nextLine();
 
+            for (Product prod : shop) {
+                if (prod.getTitle().equalsIgnoreCase(nazwa.toLowerCase())) {
+                    Product product = new Product(prod);
+
+                    if (product.getQuantity() > ilosc) {
+                        product.setQuantity(ilosc);
+                        prod.setQuantity(product.getQuantity() - ilosc);
+                        basket.add(product);
+                        isFind = true;
+                        break;
+                    } else if (product.getQuantity() == ilosc) {
+                        product.setQuantity(ilosc);
+                        shop.remove(prod);
+                        basket.add(product);
+                        isFind = true;
+                        break;
+
+                    } else {
+                        System.out.println("Nie ma tylu na stanie. Do koszyka dodany bedzie stan sklepu");
+                        product.setQuantity(prod.getQuantity());
+                        shop.remove(prod);
+                        basket.add(product);
+                        isFind = true;
+                        break;
+                    }
+                }
             }
+            if(isFind)
+                System.out.println("czy chcesz cos dodać");
+            choice = scanner.nextLine();
+        }
+        while (choice.equalsIgnoreCase("Tak")) ;
 
-        }
-        for(Product product: products){
-            product.displayProduct();
-        }
-        }
+        String kup;
+        do{
 
+            for (Product prod : shop){
+                Product product = new Product(prod);
+                prod.setQuantity(prod.getQuantity() + ilosc);
+                basket.remove(product);
+                isFind = true;
+                break;
+            }
+            if(isFind)
+                System.out.println("Czy chcesz to kupić");
+            kup = scanner.nextLine();
+        }while(kup.equalsIgnoreCase("Nie"));
+
+
+
+
+        grossPrice = 0;
+        for (Product koszyk : basket) {
+            koszyk.displayProduct();
+            grossPrice+= koszyk.countPrice();
+        }
+        System.out.println("Wartośc koszyka wynosi " + grossPrice);
+    }
         }
 
 
